@@ -21,6 +21,7 @@ struct TranslatorView: View {
                 .help("Clear all")
 
                 Button(action: {
+                    NSApp.activate(ignoringOtherApps: true)
                     if #available(macOS 14.0, *) {
                         NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
                     } else {

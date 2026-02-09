@@ -141,7 +141,8 @@ final class TranslatorViewModel: ObservableObject {
         case .google:
             return GoogleTranslateService(apiKey: key)
         case .deepL:
-            return DeepLTranslateService(apiKey: key)
+            let useFree = UserDefaults.standard.object(forKey: "deepLUseFreeAPI") as? Bool ?? true
+            return DeepLTranslateService(apiKey: key, useFreeAPI: useFree)
         }
     }
 
