@@ -17,11 +17,9 @@ final class SettingsWindowManager {
         let hostingController = NSHostingController(rootView: settingsView)
 
         let window = NSWindow(contentViewController: hostingController)
-        window.title = "Lingu Settings"
-        window.styleMask = [.titled, .closable, .resizable]
-        window.setContentSize(NSSize(width: 450, height: 380))
-        window.contentMinSize = NSSize(width: 380, height: 300)
-        window.contentMaxSize = NSSize(width: 600, height: 500)
+        window.title = "Settings"
+        window.styleMask = [.titled, .closable]
+        window.setContentSize(NSSize(width: 480, height: 520))
         window.center()
         window.isReleasedWhenClosed = false
         window.level = .floating
