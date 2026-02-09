@@ -9,9 +9,5 @@ struct LinguApp: App {
             TranslatorView(viewModel: viewModel)
         }
         .menuBarExtraStyle(.window)
-
-        Settings {
-            SettingsView(viewModel: viewModel)
-        }
     }
 }

@@ -18,6 +18,7 @@ final class TranslatorViewModel: ObservableObject {
     @AppStorage("selectedProvider") var selectedProvider: String = TranslationProvider.google.rawValue
     @AppStorage("panelCount") var panelCount: Int = 3
     @AppStorage("languageIds") var languageIdsStorage: String = "en,zh,ja"
+    @AppStorage("horizontalLayout") var horizontalLayout: Bool = false
 
     private var inputSubject = PassthroughSubject<(index: Int, text: String), Never>()
     private var cancellables = Set<AnyCancellable>()

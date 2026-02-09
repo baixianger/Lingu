@@ -22,7 +22,7 @@ struct SettingsView: View {
                     Label("API Keys", systemImage: "key")
                 }
         }
-        .frame(width: 450, height: 340)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             googleAPIKey = KeychainHelper.apiKey(for: .google)
             deepLAPIKey = KeychainHelper.apiKey(for: .deepL)
@@ -53,6 +53,12 @@ struct SettingsView: View {
                                 set: { viewModel.setPanelCount($0) }
                             ),
                             in: 2...3)
+
+                    Picker("Layout", selection: $viewModel.horizontalLayout) {
+                        Label("Vertical", systemImage: "rectangle.split.1x2").tag(false)
+                        Label("Horizontal", systemImage: "rectangle.split.2x1").tag(true)
+                    }
+                    .pickerStyle(.segmented)
                 }
                 .padding(4)
             }

@@ -13,6 +13,13 @@ struct TranslatorView: View {
 
                 Spacer()
 
+                Button(action: { viewModel.horizontalLayout.toggle() }) {
+                    Image(systemName: viewModel.horizontalLayout ? "rectangle.split.1x2" : "rectangle.split.2x1")
+                        .font(.system(size: 12))
+                }
+                .buttonStyle(.borderless)
+                .help(viewModel.horizontalLayout ? "Switch to vertical" : "Switch to horizontal")
+
                 Button(action: { viewModel.clearAll() }) {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.system(size: 12))
@@ -21,12 +28,7 @@ struct TranslatorView: View {
                 .help("Clear all")
 
                 Button(action: {
-                    NSApp.activate(ignoringOtherApps: true)
-                    if #available(macOS 14.0, *) {
-                        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                    } else {
-                        NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-                    }
+                    SettingsWindowManager.shared.open(viewModel: viewModel)
                 }) {
                     Image(systemName: "gearshape")
                         .font(.system(size: 12))
@@ -62,23 +64,48 @@ struct TranslatorView: View {
             Divider()
 
             // Language panels
-            ScrollView {
-                VStack(spacing: 2) {
-                    ForEach(viewModel.panels.indices, id: \.self) { index in
-                        LanguagePanelView(panelIndex: index, viewModel: viewModel)
-                        if index < viewModel.panels.count - 1 {
-                            Divider()
-                                .padding(.horizontal, 12)
-                        }
-                    }
-                }
-                .padding(.vertical, 4)
+            if viewModel.horizontalLayout {
+                horizontalPanels
+            } else {
+                verticalPanels
             }
         }
-        .frame(width: 340)
-        .frame(minHeight: 280, maxHeight: 500)
+        .frame(
+            minWidth: viewModel.horizontalLayout ? 500 : 300,
+            maxWidth: viewModel.horizontalLayout ? 900 : 420,
+            minHeight: 250,
+            maxHeight: 500
+        )
         .onAppear {
             viewModel.onPopoverOpen()
         }
+    }
+
+    private var verticalPanels: some View {
+        ScrollView {
+            VStack(spacing: 2) {
+                ForEach(viewModel.panels.indices, id: \.self) { index in
+                    LanguagePanelView(panelIndex: index, viewModel: viewModel)
+                    if index < viewModel.panels.count - 1 {
+                        Divider()
+                            .padding(.horizontal, 12)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private var horizontalPanels: some View {
+        HStack(alignment: .top, spacing: 0) {
+            ForEach(viewModel.panels.indices, id: \.self) { index in
+                LanguagePanelView(panelIndex: index, viewModel: viewModel)
+                if index < viewModel.panels.count - 1 {
+                    Divider()
+                        .padding(.vertical, 8)
+                }
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
