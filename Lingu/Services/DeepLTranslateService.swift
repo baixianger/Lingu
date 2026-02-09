@@ -25,8 +25,8 @@ final class DeepLTranslateService: TranslationService {
 
         let body: [String: Any] = [
             "text": [text],
-            "source_lang": source.deepLCode,
-            "target_lang": target.deepLCode
+            "source_lang": source.deepLSourceCode,
+            "target_lang": target.deepLTargetCode
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
