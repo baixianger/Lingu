@@ -13,13 +13,28 @@ final class SettingsWindowManager {
             return
         }
 
-        let settingsView = SettingsView(viewModel: viewModel)
-        let hostingController = NSHostingController(rootView: settingsView)
+        let tabVC = NSTabViewController()
+        tabVC.tabStyle = .toolbar
 
-        let window = NSWindow(contentViewController: hostingController)
-        window.title = "Settings"
+        // General tab
+        let generalTab = NSTabViewItem(
+            viewController: NSHostingController(rootView: GeneralSettingsTab(viewModel: viewModel))
+        )
+        generalTab.label = "General"
+        generalTab.image = NSImage(systemSymbolName: "gearshape", accessibilityDescription: "General")
+
+        // API Keys tab
+        let apiKeysTab = NSTabViewItem(
+            viewController: NSHostingController(rootView: APIKeysSettingsTab(viewModel: viewModel))
+        )
+        apiKeysTab.label = "API Keys"
+        apiKeysTab.image = NSImage(systemSymbolName: "key", accessibilityDescription: "API Keys")
+
+        tabVC.addTabViewItem(generalTab)
+        tabVC.addTabViewItem(apiKeysTab)
+
+        let window = NSWindow(contentViewController: tabVC)
         window.styleMask = [.titled, .closable]
-        window.setContentSize(NSSize(width: 480, height: 520))
         window.center()
         window.isReleasedWhenClosed = false
         window.level = .floating

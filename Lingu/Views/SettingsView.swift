@@ -1,86 +1,77 @@
 import SwiftUI
 
-struct SettingsView: View {
+// MARK: - General Tab
+
+struct GeneralSettingsTab: View {
+    @ObservedObject var viewModel: TranslatorViewModel
+    @State private var selectedProviderLocal: TranslationProvider = .google
+
+    var body: some View {
+        Form {
+            Picker("Provider", selection: $selectedProviderLocal) {
+                ForEach(TranslationProvider.allCases) { provider in
+                    Text(provider.rawValue).tag(provider)
+                }
+            }
+            .onChange(of: selectedProviderLocal) { newValue in
+                viewModel.selectedProvider = newValue.rawValue
+            }
+
+            Stepper(
+                "Number of Panels: \(viewModel.panelCount)",
+                value: Binding(
+                    get: { viewModel.panelCount },
+                    set: { viewModel.setPanelCount($0) }
+                ),
+                in: 2...3
+            )
+
+            Picker("Layout", selection: $viewModel.horizontalLayout) {
+                Text("Vertical").tag(false)
+                Text("Horizontal").tag(true)
+            }
+            .pickerStyle(.segmented)
+
+            Divider()
+
+            ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
+                Picker("Panel \(index + 1)", selection: Binding(
+                    get: {
+                        guard index < viewModel.panels.count else { return Language.all[0] }
+                        return viewModel.panels[index].language
+                    },
+                    set: {
+                        guard index < viewModel.panels.count else { return }
+                        viewModel.updateLanguage(at: index, to: $0)
+                    }
+                )) {
+                    ForEach(Language.all) { lang in
+                        Text("\(lang.nativeName) (\(lang.name))").tag(lang)
+                    }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .frame(width: 380)
+        .fixedSize(horizontal: false, vertical: true)
+        .onAppear {
+            selectedProviderLocal = viewModel.provider
+        }
+    }
+}
+
+// MARK: - API Keys Tab
+
+struct APIKeysSettingsTab: View {
     @ObservedObject var viewModel: TranslatorViewModel
 
     @State private var googleAPIKey = ""
     @State private var deepLAPIKey = ""
     @State private var showGoogleKey = false
     @State private var showDeepLKey = false
-    @State private var selectedProviderLocal: TranslationProvider = .google
     @State private var deepLUseFreeAPI = true
 
     var body: some View {
-        TabView {
-            generalTab
-                .tabItem { Label("General", systemImage: "slider.horizontal.3") }
-
-            apiKeysTab
-                .tabItem { Label("API Keys", systemImage: "key") }
-        }
-        .onAppear {
-            googleAPIKey = KeychainHelper.apiKey(for: .google)
-            deepLAPIKey = KeychainHelper.apiKey(for: .deepL)
-            selectedProviderLocal = viewModel.provider
-            deepLUseFreeAPI = UserDefaults.standard.object(forKey: "deepLUseFreeAPI") as? Bool ?? true
-        }
-    }
-
-    // MARK: - General Tab
-
-    private var generalTab: some View {
-        Form {
-            Section("Translation") {
-                Picker("Provider", selection: $selectedProviderLocal) {
-                    ForEach(TranslationProvider.allCases) { provider in
-                        Text(provider.rawValue).tag(provider)
-                    }
-                }
-                .onChange(of: selectedProviderLocal) { newValue in
-                    viewModel.selectedProvider = newValue.rawValue
-                }
-
-                Stepper(
-                    "Number of Panels: \(viewModel.panelCount)",
-                    value: Binding(
-                        get: { viewModel.panelCount },
-                        set: { viewModel.setPanelCount($0) }
-                    ),
-                    in: 2...3
-                )
-
-                Picker("Layout", selection: $viewModel.horizontalLayout) {
-                    Text("Vertical").tag(false)
-                    Text("Horizontal").tag(true)
-                }
-                .pickerStyle(.segmented)
-            }
-
-            Section("Languages") {
-                ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
-                    Picker("Panel \(index + 1)", selection: Binding(
-                        get: {
-                            guard index < viewModel.panels.count else { return Language.all[0] }
-                            return viewModel.panels[index].language
-                        },
-                        set: {
-                            guard index < viewModel.panels.count else { return }
-                            viewModel.updateLanguage(at: index, to: $0)
-                        }
-                    )) {
-                        ForEach(Language.all) { lang in
-                            Text("\(lang.nativeName) (\(lang.name))").tag(lang)
-                        }
-                    }
-                }
-            }
-        }
-        .formStyle(.grouped)
-    }
-
-    // MARK: - API Keys Tab
-
-    private var apiKeysTab: some View {
         Form {
             Section {
                 apiKeyField(
@@ -112,9 +103,14 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .frame(width: 380)
+        .fixedSize(horizontal: false, vertical: true)
+        .onAppear {
+            googleAPIKey = KeychainHelper.apiKey(for: .google)
+            deepLAPIKey = KeychainHelper.apiKey(for: .deepL)
+            deepLUseFreeAPI = UserDefaults.standard.object(forKey: "deepLUseFreeAPI") as? Bool ?? true
+        }
     }
-
-    // MARK: - API Key Field
 
     private func apiKeyField(
         key: Binding<String>,
