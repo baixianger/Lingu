@@ -19,6 +19,7 @@ final class TranslatorViewModel: ObservableObject {
     @AppStorage("panelCount") var panelCount: Int = 3
     @AppStorage("languageIds") var languageIdsStorage: String = "en,zh,ja"
     @AppStorage("horizontalLayout") var horizontalLayout: Bool = false
+    @AppStorage("autoPasteEnabled") var autoPasteEnabled: Bool = true
 
     private var inputSubject = PassthroughSubject<(index: Int, text: String), Never>()
     private var cancellables = Set<AnyCancellable>()
@@ -163,6 +164,7 @@ final class TranslatorViewModel: ObservableObject {
 
     func onPopoverOpen() {
         autoSelectProvider()
+        guard autoPasteEnabled else { return }
         if let clipboardText = ClipboardManager.read(),
            !clipboardText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             // Only auto-fill if all panels are empty

@@ -8,7 +8,7 @@ struct GeneralSettingsTab: View {
 
     var body: some View {
         Form {
-            Picker("Provider", selection: $selectedProviderLocal) {
+            Picker("Provider:", selection: $selectedProviderLocal) {
                 ForEach(TranslationProvider.allCases) { provider in
                     Text(provider.rawValue).tag(provider)
                 }
@@ -17,25 +17,25 @@ struct GeneralSettingsTab: View {
                 viewModel.selectedProvider = newValue.rawValue
             }
 
-            Stepper(
-                "Number of Panels: \(viewModel.panelCount)",
-                value: Binding(
-                    get: { viewModel.panelCount },
-                    set: { viewModel.setPanelCount($0) }
-                ),
-                in: 2...3
-            )
+            Picker("Panels:", selection: Binding(
+                get: { viewModel.panelCount },
+                set: { viewModel.setPanelCount($0) }
+            )) {
+                Text("2").tag(2)
+                Text("3").tag(3)
+            }
 
-            Picker("Layout", selection: $viewModel.horizontalLayout) {
+            Picker("Layout:", selection: $viewModel.horizontalLayout) {
                 Text("Vertical").tag(false)
                 Text("Horizontal").tag(true)
             }
-            .pickerStyle(.segmented)
+
+            Toggle("Auto-paste from clipboard", isOn: $viewModel.autoPasteEnabled)
 
             Divider()
 
             ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
-                Picker("Panel \(index + 1)", selection: Binding(
+                Picker("Panel \(index + 1):", selection: Binding(
                     get: {
                         guard index < viewModel.panels.count else { return Language.all[0] }
                         return viewModel.panels[index].language
@@ -51,8 +51,9 @@ struct GeneralSettingsTab: View {
                 }
             }
         }
-        .formStyle(.grouped)
-        .frame(width: 380)
+        .formStyle(.columns)
+        .padding(20)
+        .frame(width: 400)
         .fixedSize(horizontal: false, vertical: true)
         .onAppear {
             selectedProviderLocal = viewModel.provider
@@ -72,20 +73,30 @@ struct APIKeysSettingsTab: View {
     @State private var deepLUseFreeAPI = true
 
     var body: some View {
-        Form {
-            Section {
+        VStack(alignment: .leading, spacing: 16) {
+            // Google Translate
+            VStack(alignment: .leading, spacing: 6) {
+                Label("Google Translate", systemImage: "g.circle")
+                    .font(.headline)
+
                 apiKeyField(
                     key: $googleAPIKey,
                     showKey: $showGoogleKey,
                     onSave: { KeychainHelper.setAPIKey($0, for: .google) }
                 )
-            } header: {
-                Label("Google Translate", systemImage: "g.circle")
-            } footer: {
+
                 Text("Get a key from [Google Cloud Console](https://console.cloud.google.com/apis/credentials)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
-            Section {
+            Divider()
+
+            // DeepL
+            VStack(alignment: .leading, spacing: 6) {
+                Label("DeepL", systemImage: "d.circle")
+                    .font(.headline)
+
                 apiKeyField(
                     key: $deepLAPIKey,
                     showKey: $showDeepLKey,
@@ -96,14 +107,14 @@ struct APIKeysSettingsTab: View {
                     .onChange(of: deepLUseFreeAPI) { newValue in
                         UserDefaults.standard.set(newValue, forKey: "deepLUseFreeAPI")
                     }
-            } header: {
-                Label("DeepL", systemImage: "d.circle")
-            } footer: {
+
                 Text("Free keys end with \":fx\". Get one at [deepl.com/pro-api](https://www.deepl.com/pro-api)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
-        .formStyle(.grouped)
-        .frame(width: 380)
+        .padding(20)
+        .frame(width: 400)
         .fixedSize(horizontal: false, vertical: true)
         .onAppear {
             googleAPIKey = KeychainHelper.apiKey(for: .google)
@@ -125,6 +136,7 @@ struct APIKeysSettingsTab: View {
                     SecureField("API Key", text: key)
                 }
             }
+            .textFieldStyle(.roundedBorder)
             .onChange(of: key.wrappedValue) { newValue in
                 onSave(newValue)
             }
