@@ -82,7 +82,7 @@ struct APIKeysSettingsTab: View {
             } header: {
                 Label("Google Translate", systemImage: "g.circle")
             } footer: {
-                Text("Get a key from Google Cloud Console → APIs & Services → Credentials")
+                Text("Get a key from [Google Cloud Console](https://console.cloud.google.com/apis/credentials)")
             }
 
             Section {
@@ -99,7 +99,7 @@ struct APIKeysSettingsTab: View {
             } header: {
                 Label("DeepL", systemImage: "d.circle")
             } footer: {
-                Text("Free keys end with \":fx\". Get one at deepl.com/pro-api")
+                Text("Free keys end with \":fx\". Get one at [deepl.com/pro-api](https://www.deepl.com/pro-api)")
             }
         }
         .formStyle(.grouped)
