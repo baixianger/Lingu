@@ -27,15 +27,7 @@ struct TranslatorView: View {
                 .buttonStyle(.borderless)
                 .help("Clear all")
 
-                Button(action: {
-                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                    NSApp.activate(ignoringOtherApps: true)
-                }) {
-                    Image(systemName: "gearshape")
-                        .font(.system(size: 12))
-                }
-                .buttonStyle(.borderless)
-                .help("Settings")
+                settingsButton
             }
             .padding(.horizontal, 12)
             .padding(.top, 10)
@@ -82,19 +74,39 @@ struct TranslatorView: View {
         }
     }
 
+    @ViewBuilder
+    private var settingsButton: some View {
+        if #available(macOS 14, *) {
+            SettingsLink {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 12))
+            }
+            .buttonStyle(.borderless)
+            .help("Settings")
+        } else {
+            Button(action: {
+                NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+                NSApp.activate(ignoringOtherApps: true)
+            }) {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 12))
+            }
+            .buttonStyle(.borderless)
+            .help("Settings")
+        }
+    }
+
     private var verticalPanels: some View {
-        ScrollView {
-            VStack(spacing: 2) {
-                ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
-                    LanguagePanelView(panelIndex: index, viewModel: viewModel, isHorizontal: false)
-                    if index < viewModel.panels.count - 1 {
-                        Divider()
-                            .padding(.horizontal, 12)
-                    }
+        VStack(spacing: 2) {
+            ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
+                LanguagePanelView(panelIndex: index, viewModel: viewModel, isHorizontal: false)
+                if index < viewModel.panels.count - 1 {
+                    Divider()
+                        .padding(.horizontal, 12)
                 }
             }
-            .padding(.vertical, 4)
         }
+        .padding(.vertical, 4)
     }
 
     private var horizontalPanels: some View {
