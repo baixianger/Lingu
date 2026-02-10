@@ -186,11 +186,10 @@ final class TranslatorViewModel: ObservableObject {
 
     func setPanelCount(_ count: Int) {
         let clamped = max(2, min(3, count))
-        panelCount = clamped
 
+        // Build new language IDs first
         var ids = languageIds
         if clamped > ids.count {
-            // Add languages not already in use
             let usedIds = Set(ids)
             for lang in Language.all where !usedIds.contains(lang.id) {
                 ids.append(lang.id)
@@ -199,7 +198,16 @@ final class TranslatorViewModel: ObservableObject {
         } else if clamped < ids.count {
             ids = Array(ids.prefix(clamped))
         }
+
+        // Build new panels before updating any published state
+        let newPanels = ids.compactMap { id -> LanguagePanel? in
+            guard let lang = Language.find(byId: id) else { return nil }
+            return LanguagePanel(language: lang)
+        }
+
+        // Update all state — panels last to minimize stale-index window
+        panelCount = clamped
         languageIds = ids
-        setupPanels()
+        panels = newPanels
     }
 }

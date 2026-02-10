@@ -3,11 +3,15 @@ import SwiftUI
 struct LanguagePanelView: View {
     let panelIndex: Int
     @ObservedObject var viewModel: TranslatorViewModel
+    var isHorizontal: Bool = false
     @State private var isHovering = false
     @FocusState private var isFocused: Bool
 
     private var panel: LanguagePanel {
-        viewModel.panels[panelIndex]
+        guard panelIndex < viewModel.panels.count else {
+            return LanguagePanel(language: Language.all[0])
+        }
+        return viewModel.panels[panelIndex]
     }
 
     private var isSource: Bool {
@@ -27,12 +31,18 @@ struct LanguagePanelView: View {
                     set: { viewModel.updateLanguage(at: panelIndex, to: $0) }
                 )) {
                     ForEach(Language.all) { lang in
-                        Text("\(lang.nativeName) (\(lang.name))")
-                            .tag(lang)
+                        if isHorizontal {
+                            Text(lang.nativeName)
+                                .tag(lang)
+                        } else {
+                            Text("\(lang.nativeName) (\(lang.name))")
+                                .tag(lang)
+                        }
                     }
                 }
                 .labelsHidden()
-                .frame(width: 180)
+                .frame(maxWidth: isHorizontal ? 120 : 180)
+                .pickerStyle(.menu)
 
                 Spacer()
 
@@ -69,7 +79,7 @@ struct LanguagePanelView: View {
                 .foregroundColor(isTarget ? .secondary : .primary)
                 .scrollContentBackground(.hidden)
                 .focused($isFocused)
-                .frame(minHeight: 60, maxHeight: 100)
+                .frame(minHeight: isHorizontal ? 120 : 60, maxHeight: isHorizontal ? .infinity : 100)
             }
             .background(
                 RoundedRectangle(cornerRadius: 6)
@@ -80,7 +90,7 @@ struct LanguagePanelView: View {
                     .stroke(isFocused ? Color.accentColor.opacity(0.5) : Color(nsColor: .separatorColor), lineWidth: 1)
             )
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, isHorizontal ? 8 : 12)
         .padding(.vertical, 4)
         .onHover { isHovering = $0 }
     }

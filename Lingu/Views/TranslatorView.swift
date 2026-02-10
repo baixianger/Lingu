@@ -71,10 +71,10 @@ struct TranslatorView: View {
             }
         }
         .frame(
-            minWidth: viewModel.horizontalLayout ? 500 : 300,
-            maxWidth: viewModel.horizontalLayout ? 900 : 420,
-            minHeight: 250,
-            maxHeight: 500
+            minWidth: viewModel.horizontalLayout ? 600 : 300,
+            maxWidth: viewModel.horizontalLayout ? 1000 : 420,
+            minHeight: viewModel.horizontalLayout ? 300 : 250,
+            maxHeight: viewModel.horizontalLayout ? 600 : 500
         )
         .onAppear {
             viewModel.onPopoverOpen()
@@ -84,8 +84,8 @@ struct TranslatorView: View {
     private var verticalPanels: some View {
         ScrollView {
             VStack(spacing: 2) {
-                ForEach(viewModel.panels.indices, id: \.self) { index in
-                    LanguagePanelView(panelIndex: index, viewModel: viewModel)
+                ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
+                    LanguagePanelView(panelIndex: index, viewModel: viewModel, isHorizontal: false)
                     if index < viewModel.panels.count - 1 {
                         Divider()
                             .padding(.horizontal, 12)
@@ -98,8 +98,9 @@ struct TranslatorView: View {
 
     private var horizontalPanels: some View {
         HStack(alignment: .top, spacing: 0) {
-            ForEach(viewModel.panels.indices, id: \.self) { index in
-                LanguagePanelView(panelIndex: index, viewModel: viewModel)
+            ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
+                LanguagePanelView(panelIndex: index, viewModel: viewModel, isHorizontal: true)
+                    .frame(maxWidth: .infinity)
                 if index < viewModel.panels.count - 1 {
                     Divider()
                         .padding(.vertical, 8)

@@ -39,10 +39,16 @@ struct SettingsView: View {
             }
 
             Section("Languages") {
-                ForEach(viewModel.panels.indices, id: \.self) { index in
+                ForEach(Array(viewModel.panels.enumerated()), id: \.element.id) { index, _ in
                     Picker("Panel \(index + 1)", selection: Binding(
-                        get: { viewModel.panels[index].language },
-                        set: { viewModel.updateLanguage(at: index, to: $0) }
+                        get: {
+                            guard index < viewModel.panels.count else { return Language.all[0] }
+                            return viewModel.panels[index].language
+                        },
+                        set: {
+                            guard index < viewModel.panels.count else { return }
+                            viewModel.updateLanguage(at: index, to: $0)
+                        }
                     )) {
                         ForEach(Language.all) { lang in
                             Text("\(lang.nativeName) (\(lang.name))").tag(lang)
