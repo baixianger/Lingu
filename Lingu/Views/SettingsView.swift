@@ -15,6 +15,7 @@ struct GeneralSettingsTab: View {
             }
             .onChange(of: selectedProviderLocal) { newValue in
                 viewModel.selectedProvider = newValue.rawValue
+                viewModel.invalidateServiceCache()
             }
 
             LabeledContent("Panels:") {
@@ -86,7 +87,10 @@ struct APIKeysSettingsTab: View {
                 apiKeyField(
                     key: $googleAPIKey,
                     showKey: $showGoogleKey,
-                    onSave: { KeychainHelper.setAPIKey($0, for: .google) }
+                    onSave: {
+                        KeychainHelper.setAPIKey($0, for: .google)
+                        viewModel.invalidateServiceCache()
+                    }
                 )
 
                 Text("Get a key from [Google Cloud Console](https://console.cloud.google.com/apis/credentials)")
@@ -104,12 +108,16 @@ struct APIKeysSettingsTab: View {
                 apiKeyField(
                     key: $deepLAPIKey,
                     showKey: $showDeepLKey,
-                    onSave: { KeychainHelper.setAPIKey($0, for: .deepL) }
+                    onSave: {
+                        KeychainHelper.setAPIKey($0, for: .deepL)
+                        viewModel.invalidateServiceCache()
+                    }
                 )
 
                 Toggle("Use Free API (api-free.deepl.com)", isOn: $deepLUseFreeAPI)
                     .onChange(of: deepLUseFreeAPI) { newValue in
                         UserDefaults.standard.set(newValue, forKey: "deepLUseFreeAPI")
+                        viewModel.invalidateServiceCache()
                     }
 
                 Text("Free keys end with \":fx\". Get one at [deepl.com/pro-api](https://www.deepl.com/pro-api)")

@@ -45,7 +45,11 @@ struct Language: Identifiable, Hashable, Codable {
         Language(id: "vi", name: "Vietnamese", nativeName: "Tiếng Việt", googleCode: "vi", deepLSourceCode: "VI", deepLTargetCode: "VI"),
     ]
 
+    private static let byId: [String: Language] = {
+        Dictionary(uniqueKeysWithValues: all.map { ($0.id, $0) })
+    }()
+
     static func find(byId id: String) -> Language? {
-        all.first { $0.id == id }
+        byId[id]
     }
 }

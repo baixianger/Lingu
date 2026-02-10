@@ -25,13 +25,33 @@ final class TranslatorViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var translationTask: Task<Void, Never>?
 
+    /// Cached translation service — invalidated when provider or API key changes.
+    private var cachedService: TranslationService?
+    private var cachedServiceProvider: String?
+
     var provider: TranslationProvider {
         TranslationProvider(rawValue: selectedProvider) ?? .google
     }
 
+    private var _languageIdsCache: [String]?
+    private var _languageIdsCacheSource: String?
+
     var languageIds: [String] {
-        get { languageIdsStorage.split(separator: ",").map(String.init) }
-        set { languageIdsStorage = newValue.joined(separator: ",") }
+        get {
+            if let cache = _languageIdsCache, _languageIdsCacheSource == languageIdsStorage {
+                return cache
+            }
+            let parsed = languageIdsStorage.split(separator: ",").map(String.init)
+            _languageIdsCache = parsed
+            _languageIdsCacheSource = languageIdsStorage
+            return parsed
+        }
+        set {
+            let joined = newValue.joined(separator: ",")
+            languageIdsStorage = joined
+            _languageIdsCache = newValue
+            _languageIdsCacheSource = joined
+        }
     }
 
     init() {
@@ -47,6 +67,7 @@ final class TranslatorViewModel: ObservableObject {
             for candidate in TranslationProvider.allCases where candidate != provider {
                 if !KeychainHelper.apiKey(for: candidate).isEmpty {
                     selectedProvider = candidate.rawValue
+                    invalidateServiceCache()
                     return
                 }
             }
@@ -150,16 +171,36 @@ final class TranslatorViewModel: ObservableObject {
     }
 
     private func makeService() -> TranslationService? {
-        let key = KeychainHelper.apiKey(for: provider)
-        guard !key.isEmpty else { return nil }
+        // Return cached service if provider hasn't changed
+        if let cached = cachedService, cachedServiceProvider == selectedProvider {
+            return cached
+        }
 
+        let key = KeychainHelper.apiKey(for: provider)
+        guard !key.isEmpty else {
+            cachedService = nil
+            cachedServiceProvider = selectedProvider
+            return nil
+        }
+
+        let service: TranslationService
         switch provider {
         case .google:
-            return GoogleTranslateService(apiKey: key)
+            service = GoogleTranslateService(apiKey: key)
         case .deepL:
             let useFree = UserDefaults.standard.object(forKey: "deepLUseFreeAPI") as? Bool ?? true
-            return DeepLTranslateService(apiKey: key, useFreeAPI: useFree)
+            service = DeepLTranslateService(apiKey: key, useFreeAPI: useFree)
         }
+
+        cachedService = service
+        cachedServiceProvider = selectedProvider
+        return service
+    }
+
+    /// Invalidate cached service so the next translation re-reads Keychain.
+    func invalidateServiceCache() {
+        cachedService = nil
+        cachedServiceProvider = nil
     }
 
     func onPopoverOpen() {
