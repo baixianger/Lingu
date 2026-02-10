@@ -11,6 +11,24 @@ struct SettingsView: View {
     @State private var deepLUseFreeAPI = true
 
     var body: some View {
+        TabView {
+            generalTab
+                .tabItem { Label("General", systemImage: "slider.horizontal.3") }
+
+            apiKeysTab
+                .tabItem { Label("API Keys", systemImage: "key") }
+        }
+        .onAppear {
+            googleAPIKey = KeychainHelper.apiKey(for: .google)
+            deepLAPIKey = KeychainHelper.apiKey(for: .deepL)
+            selectedProviderLocal = viewModel.provider
+            deepLUseFreeAPI = UserDefaults.standard.object(forKey: "deepLUseFreeAPI") as? Bool ?? true
+        }
+    }
+
+    // MARK: - General Tab
+
+    private var generalTab: some View {
         Form {
             Section("Translation") {
                 Picker("Provider", selection: $selectedProviderLocal) {
@@ -56,7 +74,14 @@ struct SettingsView: View {
                     }
                 }
             }
+        }
+        .formStyle(.grouped)
+    }
 
+    // MARK: - API Keys Tab
+
+    private var apiKeysTab: some View {
+        Form {
             Section {
                 apiKeyField(
                     key: $googleAPIKey,
@@ -87,12 +112,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .onAppear {
-            googleAPIKey = KeychainHelper.apiKey(for: .google)
-            deepLAPIKey = KeychainHelper.apiKey(for: .deepL)
-            selectedProviderLocal = viewModel.provider
-            deepLUseFreeAPI = UserDefaults.standard.object(forKey: "deepLUseFreeAPI") as? Bool ?? true
-        }
     }
 
     // MARK: - API Key Field

@@ -52,14 +52,13 @@ struct LanguagePanelView: View {
                         .frame(width: 16, height: 16)
                 }
 
-                if isHovering && !panel.text.isEmpty {
-                    Button(action: { viewModel.copyText(at: panelIndex) }) {
-                        Image(systemName: "doc.on.doc")
-                            .font(.system(size: 12))
-                    }
-                    .buttonStyle(.borderless)
-                    .help("Copy to clipboard")
+                Button(action: { viewModel.copyText(at: panelIndex) }) {
+                    Image(systemName: "doc.on.doc")
+                        .font(.system(size: 12))
                 }
+                .buttonStyle(.borderless)
+                .help("Copy to clipboard")
+                .opacity(isHovering && !panel.text.isEmpty ? 1 : 0)
             }
 
             // Text area
