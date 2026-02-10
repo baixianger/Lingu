@@ -36,6 +36,20 @@ final class TranslatorViewModel: ObservableObject {
     init() {
         setupPanels()
         setupDebounce()
+        autoSelectProvider()
+    }
+
+    /// If the selected provider has no API key but another one does, switch automatically.
+    func autoSelectProvider() {
+        let currentKey = KeychainHelper.apiKey(for: provider)
+        if currentKey.isEmpty {
+            for candidate in TranslationProvider.allCases where candidate != provider {
+                if !KeychainHelper.apiKey(for: candidate).isEmpty {
+                    selectedProvider = candidate.rawValue
+                    return
+                }
+            }
+        }
     }
 
     func setupPanels() {
@@ -148,6 +162,7 @@ final class TranslatorViewModel: ObservableObject {
     }
 
     func onPopoverOpen() {
+        autoSelectProvider()
         if let clipboardText = ClipboardManager.read(),
            !clipboardText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             // Only auto-fill if all panels are empty
