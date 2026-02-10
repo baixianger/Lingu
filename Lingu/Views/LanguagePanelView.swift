@@ -95,3 +95,7 @@ struct LanguagePanelView: View {
         .padding(.vertical, 4)
     }
 }
+
+#Preview {
+    LanguagePanelView(panelIndex: 0, viewModel: TranslatorViewModel())
+}

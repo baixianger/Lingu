@@ -123,3 +123,13 @@ struct TranslatorView: View {
         .padding(.vertical, 4)
     }
 }
+
+#Preview("Vertical") {
+    TranslatorView(viewModel: TranslatorViewModel())
+}
+
+#Preview("Horizontal") {
+    let vm = TranslatorViewModel()
+    vm.horizontalLayout = true
+    return TranslatorView(viewModel: vm)
+}

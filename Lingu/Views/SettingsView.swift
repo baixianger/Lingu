@@ -135,7 +135,22 @@ struct APIKeysSettingsTab: View {
         }
     }
 
-    private func apiKeyField(
+}
+
+// MARK: - Previews
+
+#Preview("General") {
+    GeneralSettingsTab(viewModel: TranslatorViewModel())
+}
+
+#Preview("API Keys") {
+    APIKeysSettingsTab(viewModel: TranslatorViewModel())
+}
+
+// MARK: - Helpers
+
+private extension APIKeysSettingsTab {
+    func apiKeyField(
         key: Binding<String>,
         showKey: Binding<Bool>,
         onSave: @escaping (String) -> Void
