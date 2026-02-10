@@ -4,7 +4,7 @@ struct LanguagePanelView: View {
     let panelIndex: Int
     @ObservedObject var viewModel: TranslatorViewModel
     var isHorizontal: Bool = false
-    @State private var isHovering = false
+    @State private var isCopyHovered = false
     @FocusState private var isFocused: Bool
 
     private var panel: LanguagePanel {
@@ -55,10 +55,12 @@ struct LanguagePanelView: View {
                 Button(action: { viewModel.copyText(at: panelIndex) }) {
                     Image(systemName: "doc.on.doc")
                         .font(.system(size: 12))
+                        .fontWeight(isCopyHovered ? .bold : .regular)
                 }
                 .buttonStyle(.borderless)
                 .help("Copy to clipboard")
-                .opacity(isHovering && !panel.text.isEmpty ? 1 : 0)
+                .onHover { isCopyHovered = $0 }
+                .opacity(panel.text.isEmpty ? 0 : (isCopyHovered ? 1 : 0.5))
             }
 
             // Text area
@@ -91,6 +93,5 @@ struct LanguagePanelView: View {
         }
         .padding(.horizontal, isHorizontal ? 8 : 12)
         .padding(.vertical, 4)
-        .onHover { isHovering = $0 }
     }
 }

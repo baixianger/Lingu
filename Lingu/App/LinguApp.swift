@@ -9,5 +9,19 @@ struct LinguApp: App {
             TranslatorView(viewModel: viewModel)
         }
         .menuBarExtraStyle(.window)
+
+        Settings {
+            TabView {
+                GeneralSettingsTab(viewModel: viewModel)
+                    .tabItem {
+                        Label("General", systemImage: "gearshape")
+                    }
+
+                APIKeysSettingsTab(viewModel: viewModel)
+                    .tabItem {
+                        Label("API Keys", systemImage: "key")
+                    }
+            }
+        }
     }
 }

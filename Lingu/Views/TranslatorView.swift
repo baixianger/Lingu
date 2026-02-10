@@ -28,7 +28,8 @@ struct TranslatorView: View {
                 .help("Clear all")
 
                 Button(action: {
-                    SettingsWindowManager.shared.open(viewModel: viewModel)
+                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                    NSApp.activate(ignoringOtherApps: true)
                 }) {
                     Image(systemName: "gearshape")
                         .font(.system(size: 12))
