@@ -17,12 +17,16 @@ struct GeneralSettingsTab: View {
                 viewModel.selectedProvider = newValue.rawValue
             }
 
-            Picker("Panels:", selection: Binding(
-                get: { viewModel.panelCount },
-                set: { viewModel.setPanelCount($0) }
-            )) {
-                Text("2").tag(2)
-                Text("3").tag(3)
+            LabeledContent("Panels:") {
+                HStack(spacing: 6) {
+                    Stepper("", value: Binding(
+                        get: { viewModel.panelCount },
+                        set: { viewModel.setPanelCount($0) }
+                    ), in: 2...3)
+                    .labelsHidden()
+                    Text("\(viewModel.panelCount)")
+                        .monospacedDigit()
+                }
             }
 
             Picker("Layout:", selection: $viewModel.horizontalLayout) {
