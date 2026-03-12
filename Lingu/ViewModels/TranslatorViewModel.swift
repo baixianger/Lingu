@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 import SwiftUI
 
 struct LanguagePanel: Identifiable {
@@ -21,8 +20,6 @@ final class TranslatorViewModel: ObservableObject {
     @AppStorage("horizontalLayout") var horizontalLayout: Bool = false
     @AppStorage("autoPasteEnabled") var autoPasteEnabled: Bool = true
 
-    private var inputSubject = PassthroughSubject<(index: Int, text: String), Never>()
-    private var cancellables = Set<AnyCancellable>()
     private var translationTask: Task<Void, Never>?
 
     /// Cached translation service — invalidated when provider or API key changes.
@@ -56,7 +53,6 @@ final class TranslatorViewModel: ObservableObject {
 
     init() {
         setupPanels()
-        setupDebounce()
         autoSelectProvider()
     }
 
@@ -90,15 +86,6 @@ final class TranslatorViewModel: ObservableObject {
         }
     }
 
-    private func setupDebounce() {
-        inputSubject
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .sink { [weak self] index, text in
-                self?.performTranslation(sourceIndex: index, text: text)
-            }
-            .store(in: &cancellables)
-    }
-
     func textDidChange(panelIndex: Int, newText: String) {
         panels[panelIndex].text = newText
         activeSourceIndex = panelIndex
@@ -110,10 +97,12 @@ final class TranslatorViewModel: ObservableObject {
                 panels[i].text = ""
                 panels[i].isLoading = false
             }
-            return
         }
+    }
 
-        inputSubject.send((index: panelIndex, text: newText))
+    func translate() {
+        guard let sourceIndex = activeSourceIndex else { return }
+        performTranslation(sourceIndex: sourceIndex, text: panels[sourceIndex].text)
     }
 
     private func performTranslation(sourceIndex: Int, text: String) {
@@ -212,6 +201,7 @@ final class TranslatorViewModel: ObservableObject {
             let allEmpty = panels.allSatisfy { $0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
             if allEmpty {
                 textDidChange(panelIndex: 0, newText: clipboardText)
+                translate()
             }
         }
     }
@@ -238,7 +228,7 @@ final class TranslatorViewModel: ObservableObject {
         // Re-translate if there's a source
         if let sourceIndex = activeSourceIndex, sourceIndex != index,
            !panels[sourceIndex].text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            textDidChange(panelIndex: sourceIndex, newText: panels[sourceIndex].text)
+            translate()
         }
     }
 

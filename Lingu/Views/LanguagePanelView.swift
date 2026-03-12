@@ -5,7 +5,7 @@ struct LanguagePanelView: View {
     @ObservedObject var viewModel: TranslatorViewModel
     var isHorizontal: Bool = false
     @State private var isCopyHovered = false
-    @FocusState private var isFocused: Bool
+    @State private var isFocused = false
 
     private var panel: LanguagePanel {
         guard panelIndex < viewModel.panels.count else {
@@ -66,20 +66,21 @@ struct LanguagePanelView: View {
             // Text area
             ZStack(alignment: .topLeading) {
                 if panel.text.isEmpty && !isFocused {
-                    Text("Type to translate...")
+                    Text("Type here · Return to translate")
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 8)
                 }
 
-                TextEditor(text: Binding(
-                    get: { panel.text },
-                    set: { viewModel.textDidChange(panelIndex: panelIndex, newText: $0) }
-                ))
-                .font(.system(size: 14))
-                .foregroundColor(isTarget ? .secondary : .primary)
-                .scrollContentBackground(.hidden)
-                .focused($isFocused)
+                TranslationTextEditor(
+                    text: Binding(
+                        get: { panel.text },
+                        set: { viewModel.textDidChange(panelIndex: panelIndex, newText: $0) }
+                    ),
+                    isFocused: $isFocused,
+                    textColor: isTarget ? NSColor.secondaryLabelColor : NSColor.labelColor,
+                    onTranslate: { viewModel.translate() }
+                )
                 .frame(minHeight: isHorizontal ? 120 : 60, maxHeight: isHorizontal ? .infinity : 100)
             }
             .background(

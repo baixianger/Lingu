@@ -28,6 +28,13 @@ struct TranslatorView: View {
                 .help("Clear all")
 
                 settingsButton
+
+                Button(action: { NSApplication.shared.terminate(nil) }) {
+                    Image(systemName: "power")
+                        .font(.system(size: 12))
+                }
+                .buttonStyle(.borderless)
+                .help("Quit Lingu")
             }
             .padding(.horizontal, 12)
             .padding(.top, 10)

@@ -19,6 +19,7 @@
 		E06AEC738A2EAFDF6FD5C0D9 /* GoogleTranslateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A50AC926B6FEF7FD6FF37C4 /* GoogleTranslateService.swift */; };
 		EC929606B1870670DCB4AB29 /* DeepLTranslateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09772F1DF60A327E1DDC1247 /* DeepLTranslateService.swift */; };
 		F37F06C17AFC975F31FC487C /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A51C9DB3130AB3C599D25 /* Language.swift */; };
+		D7A1B3E4C9F2A8D5E1B34F67 /* TranslationTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C8E5F1A2D7469B8E0C1A23 /* TranslationTextEditor.swift */; };
 		FCAC0C018817DDE2E93894DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 94DCE46AC130D2263E189C06 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 		BE226D3BCA8E46EB383E9B63 /* TranslatorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslatorViewModel.swift; sourceTree = "<group>"; };
 		CEF6264B3C792169F1B9D192 /* LinguApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinguApp.swift; sourceTree = "<group>"; };
 		E6153CAE1989253A3BC6CAE5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B3C8E5F1A2D7469B8E0C1A23 /* TranslationTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationTextEditor.swift; sourceTree = "<group>"; };
 		EF9B224F2F6799EF4413C7A5 /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -53,6 +55,7 @@
 			children = (
 				8C7F164CF4F1BB2D19262708 /* LanguagePanelView.swift */,
 				E6153CAE1989253A3BC6CAE5 /* SettingsView.swift */,
+				B3C8E5F1A2D7469B8E0C1A23 /* TranslationTextEditor.swift */,
 				396299F888AED99AD22878D5 /* TranslatorView.swift */,
 			);
 			path = Views;
@@ -212,6 +215,7 @@
 				848FB0859D77FCE69A19592B /* SettingsView.swift in Sources */,
 				31A4EDBD8C5D6C99BBC8F853 /* TranslationResult.swift in Sources */,
 				9465CDF094935845E797474E /* TranslationService.swift in Sources */,
+				D7A1B3E4C9F2A8D5E1B34F67 /* TranslationTextEditor.swift in Sources */,
 				9FC274409C58E642F4F20685 /* TranslatorView.swift in Sources */,
 				112DEC857AFA346C3084D856 /* TranslatorViewModel.swift in Sources */,
 			);
